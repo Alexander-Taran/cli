@@ -17,6 +17,12 @@ let entryBundle = appSrc.splice(entryIndex, 1)[0];
 let sourceMaps = [{pattern:'scripts/**/*.js.map', included: false}];
 let files = [entryBundle].concat(testSrc).concat(appSrc).concat(sourceMaps);
 
+let bundlesToPreprocess = appSrc.reduce(function (acc, currentBundleName) {
+  let glob = currentBundleName.replace(/\\/g, '/')
+  acc[glob] = ['coverage']
+  return acc
+}, {})
+
 // @if feat.babel
 let transpilerOptions = project.transpiler.options;
 transpilerOptions.sourceMap = 'inline';
@@ -35,7 +41,7 @@ module.exports = function(config) {
     exclude: [],
     preprocessors: {
       [karmaConfig.source]: [project.transpiler.id],
-      [appSrc]: ['sourcemap']
+      ...bundlesToPreprocess
     },
 // @if feat.babel
     'babelPreprocessor': { options: transpilerOptions },
@@ -46,7 +52,20 @@ module.exports = function(config) {
       options: compilerOptions
     },
 // @endif
-    reporters: ['progress'],
+    reporters: ['progress', 'coverage', 'karma-remap-istanbul'],
+    coverageReporter: {
+      type: 'in-memory'
+    },
+    remapIstanbulReporter: {
+      remapOptions: {
+        exclude: '.html'
+      },
+      reportOptions: {},
+      reports: {
+        html: 'test/coverage',
+        lcovonly: 'test/coverage/lcov.info',
+      }
+    },
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

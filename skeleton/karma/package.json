@@ -5,9 +5,13 @@
     "karma-chrome-launcher": "",
     "karma-jasmine": "",
     "karma-sourcemap-loader": "",
+    "karma-coverage": "",
+    
+    // @if feat['cli-bundler']
+    "karma-remap-istanbul": "",
+    // @endif
 
     // @if feat.webpack
-    "karma-coverage": "",
     "karma-mocha-reporter": "",
     "karma-webpack": "",
     "karma-coverage-istanbul-reporter": "",
